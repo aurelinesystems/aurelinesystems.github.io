@@ -112,16 +112,21 @@ function doPost(e) {
     const receivedAt = new Date();
     const resolvedType = type || _deriveType(campaign);
 
+    // `_csvSafe` defangs any value that starts with = + - @ \t \r so
+    // it can't be interpreted as a formula by Google Sheets or by
+    // Excel when the data is exported. `campaign`, `type`, and
+    // `source` are already constrained to a known allow-list, but we
+    // treat them uniformly for consistency.
     const sheet = _getVisitsSheet();
     sheet.appendRow([
       receivedAt,
-      timestamp,
-      campaign,
-      resolvedType,
-      source,
-      url,
-      referrer,
-      userAgent,
+      _csvSafe(timestamp),
+      _csvSafe(campaign),
+      _csvSafe(resolvedType),
+      _csvSafe(source),
+      _csvSafe(url),
+      _csvSafe(referrer),
+      _csvSafe(userAgent),
     ]);
 
     return _json({ ok: true });
@@ -159,13 +164,13 @@ function runDiagnostic() {
   const now = new Date();
   sheet.appendRow([
     now,
-    now.toISOString(),
-    'general_diagnostic',
-    'general',
-    'qr',
-    'https://aurelinesystems.github.io/?utm_source=qr&utm_campaign=general_diagnostic',
+    _csvSafe(now.toISOString()),
+    _csvSafe('general_diagnostic'),
+    _csvSafe('general'),
+    _csvSafe('qr'),
+    _csvSafe('https://aurelinesystems.github.io/?utm_source=qr&utm_campaign=general_diagnostic'),
     '',
-    'runDiagnostic()',
+    _csvSafe('runDiagnostic()'),
   ]);
   console.log('Diagnostic row appended to tab "' + TAB_NAME + '".');
 }
@@ -204,6 +209,17 @@ function _deriveType(campaign) {
 
 function _clean(v, max) {
   return String(v == null ? '' : v).slice(0, max).replace(/[\u0000-\u001f\u007f]+/g, ' ').trim();
+}
+
+// Formula-injection defense — mirror of the helper in apps-script.gs.
+// Prevents a crafted payload like `url==HYPERLINK(...)` from turning
+// into a live formula once it lands in the sheet.
+function _csvSafe(v) {
+  if (v == null) return v;
+  if (typeof v !== 'string') return v;
+  if (v.length === 0) return v;
+  if (/^[=+\-@\t\r]/.test(v)) return "'" + v;
+  return v;
 }
 
 function _json(obj) {

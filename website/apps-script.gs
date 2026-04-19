@@ -79,11 +79,14 @@ function doPost(e) {
     }
 
     // Sanitize and bound inputs (defense in depth — HTML already has maxlength).
+    // `_clean` = single-line: strips all control chars (incl. \n/\r).
+    // `_cleanMulti` = multi-line: preserves \n so the message keeps its
+    //   line breaks in both the sheet and the email body.
     const name    = _clean(p.name, 200);
     const email   = _clean(p.email, 200);
     const phone   = _clean(p.phone, 50);
     const company = _clean(p.company, 200);
-    const message = _clean(p.message, 2000);
+    const message = _cleanMulti(p.message, 2000);
 
     if (!name || !email || !message) {
       return _json({ ok: false, error: 'missing_fields' });
@@ -100,8 +103,18 @@ function doPost(e) {
     const timestamp = new Date();
 
     // Append to the target sheet (by explicit ID, not "active sheet").
+    // `_csvSafe` defangs formula-injection on any text that starts with
+    // = + - @ \t \r — protecting the sheet itself and anyone who later
+    // exports the data to CSV and opens it in Excel.
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
-    sheet.appendRow([timestamp, name, email, phone, company, message]);
+    sheet.appendRow([
+      timestamp,
+      _csvSafe(name),
+      _csvSafe(email),
+      _csvSafe(phone),
+      _csvSafe(company),
+      _csvSafe(message),
+    ]);
 
     // Send the notification email.
     const subject = `${SUBJECT_PREFIX} ${name}${company ? ' — ' + company : ''}`;
@@ -161,7 +174,14 @@ function doGet() {
 function runDiagnostic() {
   const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
   const stamp = new Date();
-  sheet.appendRow([stamp, 'Diagnostic', NOTIFY_EMAIL, '', 'Aureline Systems', 'Test from runDiagnostic()']);
+  sheet.appendRow([
+    stamp,
+    _csvSafe('Diagnostic'),
+    _csvSafe(NOTIFY_EMAIL),
+    '',
+    _csvSafe('Aureline Systems'),
+    _csvSafe('Test from runDiagnostic()'),
+  ]);
 
   MailApp.sendEmail({
     to: NOTIFY_EMAIL,
@@ -176,8 +196,37 @@ function runDiagnostic() {
 
 // ───── helpers ─────
 
+// Single-line clean: strip ALL control characters (including newlines),
+// slice to a hard maximum length, and trim surrounding whitespace.
+// Use for name / email / phone / company and anything that goes into
+// a header-like position (subject line, replyTo, etc.).
 function _clean(v, max) {
   return String(v == null ? '' : v).slice(0, max).replace(/[\u0000-\u001f\u007f]+/g, ' ').trim();
+}
+
+// Multi-line clean: preserve \n so textarea content keeps its line
+// breaks, normalize \r\n → \n, and strip every other control character.
+// Use for the message body specifically.
+function _cleanMulti(v, max) {
+  return String(v == null ? '' : v)
+    .slice(0, max)
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\u0000-\u0009\u000b-\u001f\u007f]+/g, ' ')
+    .trim();
+}
+
+// Formula-injection defense for Google Sheets / CSV exports.
+// If a cell value starts with a char that spreadsheet apps can
+// interpret as a formula, prefix with a single quote so the value is
+// treated as literal text. Leading tab/CR are rare but also dangerous
+// in CSVs opened by Excel, so they're covered too. Empty strings and
+// non-string values are returned unchanged.
+function _csvSafe(v) {
+  if (v == null) return v;
+  if (typeof v !== 'string') return v;
+  if (v.length === 0) return v;
+  if (/^[=+\-@\t\r]/.test(v)) return "'" + v;
+  return v;
 }
 
 function _json(obj) {
