@@ -32,6 +32,13 @@
   // Expected utm_source for our QR traffic.
   const EXPECTED_SOURCE = "qr";
 
+  // Apps Script web-app URL that receives qualifying QR visits and
+  // writes them to the "Visits" tab of the QR Visits spreadsheet.
+  // See website/apps-script-qr.gs for the backend + deployment steps.
+  // Leave as the placeholder below until the script is deployed;
+  // an empty / placeholder URL silently skips the network send.
+  const QR_SCRIPT_URL = "";
+
   // localStorage key that holds the rolling array of visits.
   const STORAGE_KEY = "aureline:qrVisits";
 
@@ -198,39 +205,40 @@
       // console not available; ignore
     }
 
+    // Send to the QR Visits Apps Script endpoint (fire-and-forget).
+    // `no-cors` avoids a CORS preflight that Apps Script doesn't
+    // handle; we can't read the response, but the POST reliably
+    // reaches the script. If QR_SCRIPT_URL is blank we skip silently
+    // so the tracker still logs to localStorage during development.
+    if (QR_SCRIPT_URL && /^https:\/\/script\.google\.com\//.test(QR_SCRIPT_URL)) {
+      try {
+        const form = new FormData();
+        Object.keys(record).forEach((key) => {
+          const value = record[key];
+          form.append(key, value == null ? "" : String(value));
+        });
+        fetch(QR_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          body: form,
+        }).catch(() => {
+          // best-effort; failures are ignored
+        });
+      } catch (_err) {
+        // FormData / fetch unavailable — skip silently
+      }
+    }
+
     // -----------------------------------------------------------------
-    // FUTURE EXTENSIONS — leave commented until needed.
+    // OPTIONAL: forward to Google Analytics 4 as a custom event.
+    // Only runs if you add the GA4 snippet to index.html later.
     // -----------------------------------------------------------------
-    //
-    // 1) Send to a custom backend endpoint:
-    //
-    //    fetch("https://your-api.example.com/qr-visits", {
-    //      method: "POST",
-    //      mode: "no-cors",
-    //      headers: { "Content-Type": "application/json" },
-    //      body: JSON.stringify(record),
-    //    }).catch(() => { /* best-effort */ });
-    //
-    // 2) Send to Google Sheets via Apps Script (same pattern as the
-    //    contact form in apps-script.gs). Add a second doPost branch
-    //    keyed on `record.source === "qr"` and log to a "QR Visits"
-    //    tab.
-    //
-    //    const QR_SCRIPT_URL = "https://script.google.com/macros/s/.../exec";
-    //    const form = new FormData();
-    //    Object.entries(record).forEach(([k, v]) => form.append(k, v ?? ""));
-    //    fetch(QR_SCRIPT_URL, { method: "POST", mode: "no-cors", body: form });
-    //
-    // 3) Forward to Google Analytics 4 as an event (only if GA is
-    //    already loaded on the page):
-    //
-    //    if (typeof window.gtag === "function") {
-    //      window.gtag("event", "qr_campaign_visit", {
-    //        campaign_name: record.campaign,
-    //        campaign_type: record.type,
-    //      });
-    //    }
-    // -----------------------------------------------------------------
+    // if (typeof window.gtag === "function") {
+    //   window.gtag("event", "qr_campaign_visit", {
+    //     campaign_name: record.campaign,
+    //     campaign_type: record.type,
+    //   });
+    // }
 
     return record;
   }
