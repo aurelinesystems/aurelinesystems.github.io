@@ -1,95 +1,38 @@
-# Aureline Systems — Website
+# Aureline Systems — Automations Workspace
 
-A minimalist, single-page marketing site for Aureline Systems. Static HTML/CSS/JS,
-no build step, no dependencies.
+Local workspace holding the projects that power Aureline Systems' day-to-day
+operations. Each subfolder is a self-contained project; they share nothing
+except this root folder and a single `.env` at the top that projects can
+optionally pick up.
 
-## Files
+## Projects
 
-- `index.html` — all page content and structure
-- `styles.css` — design system and layout
-- `script.js` — footer year, message counter, and contact-form POST
-- `apps-script.gs` — Apps Script backend code (paste into Google)
-- `.nojekyll` — tells GitHub Pages not to run Jekyll
+| Folder               | What it is                                                                                           |
+| -------------------- | ---------------------------------------------------------------------------------------------------- |
+| `website/`           | Static single-page marketing site for Aureline Systems. Auto-deploys to GitHub Pages on push.        |
+| `bitly_qr_manager/`  | Local Python CLI for creating Bitly short links + QR codes for outreach campaigns. Not pushed.       |
 
-## Deploy (GitHub Pages)
+## Git / deployment layout
 
-The site is plain static files. To publish:
+This folder is the root of the `aurelinesystems/aurelinesystems.github.io`
+GitHub repo. Only `website/` and `.github/` are published:
 
-1. Push this repo to `github.com/aurelinesystems/<repo>`.
-2. In the repo, open **Settings → Pages**.
-3. Set **Source: Deploy from a branch**, **Branch: `main` / `/root`**.
-4. Save. GitHub Pages will publish at
-   `https://aurelinesystems.github.io/<repo>/`
-   (or at `https://aurelinesystems.github.io/` if the repo is named
-   `aurelinesystems.github.io`).
+- `website/` is deployed to <https://aurelinesystems.github.io/> via the
+  GitHub Actions workflow at `.github/workflows/deploy.yml`.
+- `bitly_qr_manager/` is gitignored and stays local.
+- `.env` is gitignored.
+- This `README.md` lives alongside the projects as workspace documentation.
 
-## Contact form (Google Sheet + email)
+## Quick start
 
-The contact form on the site posts to a **Google Apps Script web app**
-that you own. That script writes each submission as a row in a Google
-Sheet and emails you a notification. No credentials are in the website;
-the only value the site knows is a public Apps Script deployment URL.
+- **Website**: see [`website/README.md`](website/README.md).
+- **Bitly QR manager**: see [`bitly_qr_manager/README.md`](bitly_qr_manager/README.md).
 
-Full setup notes live in `apps-script.gs`. Current wiring:
+## Adding a new project
 
-- **Sheet ID**: hardcoded in `apps-script.gs` (`SHEET_ID`)
-- **Notification email**: `NOTIFY_EMAIL` in `apps-script.gs`
-- **Web app URL**: `APPS_SCRIPT_URL` in `script.js`
-
-### Editing the backend later
-
-Pushing changes to `apps-script.gs` in this repo does NOT update Google's
-running copy. After editing:
-
-1. Paste the new version into the Apps Script editor at
-   <https://script.google.com> and **Save**.
-2. **Deploy → Manage deployments → pencil → Version: "New version" → Deploy**.
-3. The web app URL stays the same, so `script.js` needs no change.
-
-### Diagnostic
-
-If submissions stop landing, in the Apps Script editor select function
-`runDiagnostic` and click **Run**. It writes a test row and sends a test
-email — revealing any permission or quota issue in the Executions tab.
-
-### Why this setup
-
-- Your Gmail address is never in the HTML.
-- Script runs as your Google account, so it can write to your sheet
-  and send mail from your inbox with no credentials on the client.
-- Free, no Google Cloud project, no service accounts.
-- You get both a **spreadsheet archive** and an **email per submission**.
-
-## Things to replace / customize
-
-| What               | Where                                         |
-| ------------------ | --------------------------------------------- |
-| Email destination  | `NOTIFY_EMAIL` in `apps-script.gs` (then redeploy)      |
-| Sheet destination  | `SHEET_ID` in `apps-script.gs` (then redeploy)          |
-| Apps Script URL    | `APPS_SCRIPT_URL` in `script.js`                        |
-| LinkedIn URL       | `index.html` — search for `linkedin.com/company/aureline-systems` (2 places) |
-| Testimonials       | `index.html` — the `<!-- PLACEHOLDER TESTIMONIALS -->` section |
-| Company description| `index.html` — hero and "What we do" sections |
-| Page title / meta  | `index.html` — top `<head>` block             |
-
-## LinkedIn note
-
-Do **not** create a second personal LinkedIn profile for Aureline Systems.
-Instead, create a **LinkedIn Company Page**:
-
-1. On LinkedIn, click **Work → Create a Company Page**.
-2. Choose the appropriate company type (Small business / Medium business).
-3. Fill in Aureline Systems' name, tagline, and logo.
-4. Copy the public URL and paste it into `index.html` (two spots: the hero
-   LinkedIn button and the Contact section).
-
-## Local preview
-
-No build step. Open `index.html` directly in a browser, or run any static
-server, e.g.:
-
-```powershell
-# Python 3
-python -m http.server 8080
-# then visit http://localhost:8080
-```
+1. Create a sibling folder at the workspace root (e.g. `new_tool/`).
+2. Decide whether it should be pushed or local-only:
+   - **Push it** (it's part of what the repo hosts): nothing to do; just commit.
+   - **Local only** (tools, experiments, data): add the folder name to
+     `.gitignore` alongside `bitly_qr_manager/`.
+3. Each local project gets its own `venv`, `README.md`, and dependencies.
