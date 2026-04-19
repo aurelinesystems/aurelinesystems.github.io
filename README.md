@@ -11,6 +11,7 @@ optionally pick up.
 | -------------------- | ----------------------------------------------------------------------------------------------------- |
 | `website/`           | Static single-page marketing site for Aureline Systems. Auto-deploys to GitHub Pages on push.         |
 | `server/`            | Google Apps Script backend code (contact form + QR visit logger). Reference copy only, not published. |
+| `prompts/`           | Reusable AI prompts for common workflows (e.g. spinning up a new GitHub repo). Not published.         |
 
 ## Git / deployment layout
 
