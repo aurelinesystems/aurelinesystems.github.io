@@ -216,52 +216,38 @@
 
         <!--
           CONTACT FORM
-          Submissions are sent to a Google Form (no backend needed, no
-          email exposed in the HTML).
+          Submissions are sent to a Google Apps Script web app that writes
+          to your Google Sheet and emails you a notification. No credentials
+          live in this HTML; the only value the site knows is a public
+          deployment URL (kept in script.js).
 
-          SETUP (one-time):
-          1. Create a Google Form with these fields (in this order):
-               - Name         (short answer, required)
-               - Email        (short answer, required)
-               - Phone        (short answer)
-               - Company      (short answer)
-               - Message      (paragraph, required)
-          2. In the form, click the 3-dot menu -> "Get pre-filled link".
-             Fill in recognizable test values (e.g. NAME, EMAIL, PHONE,
-             COMPANY, MESSAGE) and click "Get link".
-          3. Copy the generated URL. It will look like:
-               https://docs.google.com/forms/d/e/XXXX/viewform?usp=pp_url&entry.111=NAME&entry.222=EMAIL&...
-          4. Paste the entry IDs below into the matching `name` attributes:
-               entry.111, entry.222, entry.333, entry.444, entry.555
-          5. In script.js, paste the form ID (the XXXX part) into GOOGLE_FORM_ID.
-          6. Enable email notifications in Google Forms: Responses tab ->
-             3-dot menu -> "Get email notifications for new responses".
+          See apps-script.gs in this repo for the one-time setup.
         -->
         <form class="contact__form" id="contactForm" novalidate>
           <div class="field">
             <label for="name">Name</label>
-            <input id="name" name="entry.NAME_ID" type="text" maxlength="80" required autocomplete="name" />
+            <input id="name" name="name" type="text" maxlength="80" required autocomplete="name" />
           </div>
           <div class="field field--split">
             <div>
               <label for="email">Email</label>
-              <input id="email" name="entry.EMAIL_ID" type="email" maxlength="120" required autocomplete="email" />
+              <input id="email" name="email" type="email" maxlength="120" required autocomplete="email" />
             </div>
             <div>
               <label for="phone">Phone</label>
-              <input id="phone" name="entry.PHONE_ID" type="tel" maxlength="30" autocomplete="tel" inputmode="tel" />
+              <input id="phone" name="phone" type="tel" maxlength="30" autocomplete="tel" inputmode="tel" />
             </div>
           </div>
           <div class="field">
             <label for="company">Company</label>
-            <input id="company" name="entry.COMPANY_ID" type="text" maxlength="120" autocomplete="organization" />
+            <input id="company" name="company" type="text" maxlength="120" autocomplete="organization" />
           </div>
           <div class="field">
             <label for="message">
               <span>Message</span>
               <span class="counter" aria-hidden="true"><span id="msgCount">0</span> / 1000</span>
             </label>
-            <textarea id="message" name="entry.MESSAGE_ID" rows="5" maxlength="1000" required></textarea>
+            <textarea id="message" name="message" rows="5" maxlength="1000" required></textarea>
           </div>
 
           <!-- Honeypot field for bots. Humans won't see or fill this. -->

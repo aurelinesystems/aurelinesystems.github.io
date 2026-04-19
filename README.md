@@ -21,56 +21,41 @@ The site is plain static files. To publish:
    (or at `https://aurelinesystems.github.io/` if the repo is named
    `aurelinesystems.github.io`).
 
-## Contact form (Google Forms)
+## Contact form (Google Sheet + email)
 
-The form on the site submits directly to a Google Form you own. No backend,
-no exposed email, and you get email notifications + a Google Sheet of
-responses automatically.
+The contact form on the site posts to a **Google Apps Script web app**
+that you own. That script writes each submission as a row in a Google
+Sheet and emails you a notification. No credentials are in the website;
+the only value the site knows is a public Apps Script deployment URL.
 
-### One-time setup
+Full step-by-step setup lives in `apps-script.gs` (the file you paste
+into Google). Short version:
 
-1. Sign into **aurelinesystems@gmail.com**.
-2. Create a new Google Form (<https://forms.google.com>) titled
-   e.g. "Aureline Systems — Inquiries" with these fields, in order:
-   - **Name** — short answer, required
-   - **Email** — short answer, required (enable "Response validation → Text → Email")
-   - **Phone** — short answer
-   - **Company** — short answer
-   - **Message** — paragraph, required
-3. Click the form's 3-dot menu → **Get pre-filled link**. Enter recognizable
-   values (e.g. `NAME`, `EMAIL`, `PHONE`, `COMPANY`, `MESSAGE`) and click
-   **Get link** → **Copy link**.
-4. The link looks like:
+1. Create a Google Sheet titled "Aureline Systems — Inquiries".
+   Row 1 headers: `Timestamp | Name | Email | Phone | Company | Message`.
+2. In the sheet: **Extensions → Apps Script**. Paste the contents of
+   `apps-script.gs`. Save.
+3. **Deploy → New deployment → Web app**. Execute as **Me**, access
+   **Anyone**. Copy the web app URL.
+4. Paste that URL into `script.js` as `APPS_SCRIPT_URL`.
+5. Commit and push. Submit the form once on the live site to confirm
+   a row appears and an email arrives.
 
-   ```
-   https://docs.google.com/forms/d/e/1FAIpQLSxxxxxxxx/viewform?usp=pp_url
-     &entry.111111111=NAME
-     &entry.222222222=EMAIL
-     &entry.333333333=PHONE
-     &entry.444444444=COMPANY
-     &entry.555555555=MESSAGE
-   ```
+### Why this setup
 
-5. Open `script.js` and replace:
-   - `GOOGLE_FORM_ID` → the `1FAIpQLS…` value
-   - `entry.REPLACE_NAME` → `entry.111111111` (etc., one per field)
-
-6. In the Google Form, go to **Responses → ⋮ → Get email notifications for
-   new responses**. Turn it on. You'll be emailed each time someone submits.
-
-7. Commit and push. Done.
-
-### Why Google Forms
-
-- Your email address is never in the HTML (no scraping).
-- Free, reliable delivery, with a Google Sheet history.
-- Built-in spam resistance; the site also has a honeypot field.
+- Your Gmail address is never in the HTML.
+- Script runs as your Google account, so it can write to your sheet
+  and send mail from your inbox with no credentials on the client.
+- Free, no Google Cloud project, no service accounts.
+- You get both a **spreadsheet archive** and an **email per submission**.
 
 ## Things to replace / customize
 
 | What               | Where                                         |
 | ------------------ | --------------------------------------------- |
-| Email destination  | Handled by the Google Form you own — no code change needed. |
+| Email destination  | `NOTIFY_EMAIL` in `apps-script.gs` (then redeploy)      |
+| Sheet destination  | Whichever sheet you bind the Apps Script to             |
+| Apps Script URL    | `APPS_SCRIPT_URL` in `script.js`                        |
 | LinkedIn URL       | `index.html` — search for `linkedin.com/company/aureline-systems` (2 places) |
 | Testimonials       | `index.html` — the `<!-- PLACEHOLDER TESTIMONIALS -->` section |
 | Company description| `index.html` — hero and "What we do" sections |

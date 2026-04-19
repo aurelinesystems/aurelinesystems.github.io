@@ -5,3 +5,15 @@ node_modules/
 .vscode/
 .idea/
 *.log
+
+# Secrets — never commit credentials
+*.json
+!package.json
+!package-lock.json
+!tsconfig*.json
+*-service-account*
+*credentials*
+*.pem
+*.key
+.env
+.env.*

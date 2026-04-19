@@ -1,8 +1,9 @@
 /* =========================================================
    Aureline Systems — script.js
-   - Year in footer
-   - Character counter on message
-   - Contact form: submits to a Google Form (no backend needed)
+   - Footer year
+   - Message character counter
+   - Contact form: POSTs to a Google Apps Script web app
+     (see apps-script.gs for the backend + setup guide)
    ========================================================= */
 
 (() => {
@@ -20,50 +21,33 @@
   }
 
   /* -------------------------------------------------------
-     GOOGLE FORM SETUP
+     APPS SCRIPT ENDPOINT
      --------------------------------------------------------
-     1. Create a Google Form with the exact fields described
-        in index.html (Name, Email, Phone, Company, Message).
-     2. Open the form, click the 3-dot menu -> "Get pre-filled link".
-        Enter recognizable test values and click "Get link".
-     3. Copy the resulting URL. It looks like:
-          https://docs.google.com/forms/d/e/<FORM_ID>/viewform?usp=pp_url
-            &entry.111111111=NAME
-            &entry.222222222=EMAIL
-            &entry.333333333=PHONE
-            &entry.444444444=COMPANY
-            &entry.555555555=MESSAGE
-     4. Paste FORM_ID and the five entry IDs below.
-     5. In the Google Form -> Responses tab, click the 3-dot menu
-        and enable "Get email notifications for new responses".
-        (Make sure the form is owned by aurelinesystems@gmail.com
-        so notifications land in the right inbox.)
+     Follow the setup steps in apps-script.gs first.
+     After you deploy the web app, Google gives you a URL like:
+       https://script.google.com/macros/s/AKfycbx.../exec
+     Paste that URL as the value of APPS_SCRIPT_URL below.
+
+     This URL is NOT a secret — it's meant to be called from
+     browsers — so it is safe to commit it to this repo.
   -------------------------------------------------------- */
-  const GOOGLE_FORM_ID = 'REPLACE_WITH_FORM_ID';
-  const ENTRY_IDS = {
-    name:    'entry.REPLACE_NAME',
-    email:   'entry.REPLACE_EMAIL',
-    phone:   'entry.REPLACE_PHONE',
-    company: 'entry.REPLACE_COMPANY',
-    message: 'entry.REPLACE_MESSAGE',
-  };
+  const APPS_SCRIPT_URL = 'REPLACE_WITH_APPS_SCRIPT_URL';
 
   const form = document.getElementById('contactForm');
   const statusEl = document.getElementById('formStatus');
   const submitBtn = document.getElementById('submitBtn');
-
   if (!form) return;
 
-  // Update the real input `name` attributes with the entry IDs.
-  const bind = (inputId, entryKey) => {
-    const el = document.getElementById(inputId);
-    if (el) el.name = ENTRY_IDS[entryKey];
+  // Give the form's real `name` attributes friendly keys.
+  const rename = (id, name) => {
+    const el = document.getElementById(id);
+    if (el) el.name = name;
   };
-  bind('name', 'name');
-  bind('email', 'email');
-  bind('phone', 'phone');
-  bind('company', 'company');
-  bind('message', 'message');
+  rename('name', 'name');
+  rename('email', 'email');
+  rename('phone', 'phone');
+  rename('company', 'company');
+  rename('message', 'message');
 
   const setStatus = (text, kind = '') => {
     statusEl.textContent = text;
@@ -71,15 +55,15 @@
     if (kind) statusEl.classList.add(kind);
   };
 
-  const validateEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Honeypot — silently succeed if a bot filled it.
+    // Honeypot: if a bot filled the hidden "website" field, silently succeed.
     const hp = form.querySelector('input[name="website"]');
     if (hp && hp.value) {
-      setStatus('Thanks — we\u2019ll be in touch.', 'is-success');
+      setStatus('Thanks \u2014 we\u2019ll be in touch.', 'is-success');
       form.reset();
       return;
     }
@@ -92,14 +76,14 @@
       setStatus('Please fill in your name, email, and a short message.', 'is-error');
       return;
     }
-    if (!validateEmail(email)) {
-      setStatus('That email address looks off — please double-check.', 'is-error');
+    if (!validEmail(email)) {
+      setStatus('That email address looks off \u2014 please double-check.', 'is-error');
       return;
     }
 
-    if (GOOGLE_FORM_ID === 'REPLACE_WITH_FORM_ID') {
+    if (APPS_SCRIPT_URL === 'REPLACE_WITH_APPS_SCRIPT_URL') {
       setStatus(
-        'Form not configured yet. See script.js for setup steps.',
+        'Form not configured yet. See apps-script.gs for setup.',
         'is-error'
       );
       return;
@@ -112,21 +96,17 @@
 
     try {
       const data = new FormData(form);
-      // Remove honeypot so it never reaches Google Forms.
-      data.delete('website');
+      data.delete('website'); // strip honeypot before sending
 
-      const url = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
-
-      // Google Forms responds with an opaque redirect from a cross-origin
-      // request, so we use no-cors. We can't read the response, but the
-      // submission goes through reliably.
-      await fetch(url, {
+      // `no-cors` avoids a CORS preflight that Apps Script doesn't support.
+      // We can't read the response, but the POST reliably reaches the script.
+      await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
         body: data,
       });
 
-      setStatus('Thanks — your message was sent. We\u2019ll be in touch.', 'is-success');
+      setStatus('Thanks \u2014 your message was sent. We\u2019ll be in touch.', 'is-success');
       form.reset();
       if (counter) counter.textContent = '0';
     } catch (err) {
