@@ -58,6 +58,12 @@
  *   trash icon on the active deployment.
  */
 
+// Target spreadsheet ID — the long string in the sheet URL between /d/ and /edit:
+//   https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit
+// Hardcoding the ID means this script works whether it's bound to the
+// sheet or standalone, and removes any "which sheet is active?" ambiguity.
+const SHEET_ID = '1XpegBtawZhrXjC9qw9762DEt7mBGROv49j08Yig2tRQ';
+
 // Address that receives the "new inquiry" notification email.
 const NOTIFY_EMAIL = 'aurelinesystems@gmail.com';
 
@@ -101,8 +107,8 @@ function doPost(e) {
 
     const timestamp = new Date();
 
-    // Append to the sheet this script is bound to.
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    // Append to the target sheet (by explicit ID, not "active sheet").
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
     sheet.appendRow([timestamp, name, email, phone, company, message]);
 
     // Send the notification email.
@@ -161,7 +167,7 @@ function doGet() {
  *   5. Check your inbox and the sheet.
  */
 function runDiagnostic() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
   const stamp = new Date();
   sheet.appendRow([stamp, 'Diagnostic', NOTIFY_EMAIL, '', 'Aureline Systems', 'Test from runDiagnostic()']);
 
