@@ -34,7 +34,7 @@
 
   // Apps Script web-app URL that receives qualifying QR visits and
   // writes them to the "Visits" tab of the QR Visits spreadsheet.
-  // See server/apps-script-qr.gs for the backend + deployment steps.
+  // See server/qr-visits.gs for the backend + deployment steps.
   // Leave as the placeholder below until the script is deployed;
   // an empty / placeholder URL silently skips the network send.
   const QR_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuzKToUATEeSIexWmal0PKwj91qhc1Uw4a4zWbyXtEBShjuDA_rOP9zYyR4JySJGG9ZQ/exec";

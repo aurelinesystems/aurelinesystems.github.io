@@ -13,8 +13,8 @@ no build step, no dependencies.
 
 Backend code (NOT deployed to the public site — lives in `../server/`):
 
-- `server/apps-script.gs` — contact-form Apps Script backend
-- `server/apps-script-qr.gs` — QR-visit Apps Script backend
+- `server/contact-form.gs` — Apps Script backend for the contact form
+- `server/qr-visits.gs` — Apps Script backend for QR campaign tracking
 
 These files are kept out of `website/` on purpose: they contain the sheet
 IDs and the notification email, and there's no reason to serve them
@@ -40,15 +40,15 @@ that you own. That script writes each submission as a row in a Google
 Sheet and emails you a notification. No credentials are in the website;
 the only value the site knows is a public Apps Script deployment URL.
 
-Full setup notes live in `../server/apps-script.gs`. Current wiring:
+Full setup notes live in `../server/contact-form.gs`. Current wiring:
 
-- **Sheet ID**: hardcoded in `server/apps-script.gs` (`SHEET_ID`)
-- **Notification email**: `NOTIFY_EMAIL` in `server/apps-script.gs`
+- **Sheet ID**: hardcoded in `server/contact-form.gs` (`SHEET_ID`)
+- **Notification email**: `NOTIFY_EMAIL` in `server/contact-form.gs`
 - **Web app URL**: `APPS_SCRIPT_URL` in `script.js` (public by design)
 
 ### Editing the backend later
 
-Pushing changes to `server/apps-script.gs` in this repo does NOT update
+Pushing changes to `server/contact-form.gs` in this repo does NOT update
 Google's running copy. After editing:
 
 1. Paste the new version into the Apps Script editor at
@@ -74,8 +74,8 @@ email — revealing any permission or quota issue in the Executions tab.
 
 | What               | Where                                         |
 | ------------------ | --------------------------------------------- |
-| Email destination  | `NOTIFY_EMAIL` in `server/apps-script.gs` (then redeploy) |
-| Sheet destination  | `SHEET_ID` in `server/apps-script.gs` (then redeploy)     |
+| Email destination  | `NOTIFY_EMAIL` in `server/contact-form.gs` (then redeploy) |
+| Sheet destination  | `SHEET_ID` in `server/contact-form.gs` (then redeploy)     |
 | Apps Script URL    | `APPS_SCRIPT_URL` in `script.js`                        |
 | LinkedIn URL       | `index.html` — search for `linkedin.com/company/aureline-systems` (2 places) |
 | Testimonials       | `index.html` — the `<!-- PLACEHOLDER TESTIMONIALS -->` section |

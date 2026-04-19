@@ -18,9 +18,7 @@ node_modules/
 .env
 .env.*
 
-# Local tooling / sibling projects that live in this workspace
-# but should NOT be part of the website repo.
-bitly_qr_manager/
+# Local tooling / Python artifacts — never part of the website repo.
 __pycache__/
 *.pyc
 .venv/

@@ -8,7 +8,7 @@
  *   3. Appends one row per qualifying visit to the "Visits" tab of the
  *      dedicated QR Visits spreadsheet.
  *
- * Why this is a *separate* script from apps-script.gs:
+ * Why this is a *separate* script from contact-form.gs:
  *   - Keeps marketing analytics data isolated from contact inquiries.
  *   - Deploying/editing it carries zero risk to the live contact form.
  *   - Different spreadsheet, different web-app URL, different scopes.
@@ -211,7 +211,7 @@ function _clean(v, max) {
   return String(v == null ? '' : v).slice(0, max).replace(/[\u0000-\u001f\u007f]+/g, ' ').trim();
 }
 
-// Formula-injection defense — mirror of the helper in apps-script.gs.
+// Formula-injection defense — mirror of the helper in contact-form.gs.
 // Prevents a crafted payload like `url==HYPERLINK(...)` from turning
 // into a live formula once it lands in the sheet.
 function _csvSafe(v) {

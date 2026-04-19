@@ -7,11 +7,10 @@ optionally pick up.
 
 ## Projects
 
-| Folder               | What it is                                                                                           |
-| -------------------- | ---------------------------------------------------------------------------------------------------- |
-| `website/`           | Static single-page marketing site for Aureline Systems. Auto-deploys to GitHub Pages on push.        |
+| Folder               | What it is                                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| `website/`           | Static single-page marketing site for Aureline Systems. Auto-deploys to GitHub Pages on push.         |
 | `server/`            | Google Apps Script backend code (contact form + QR visit logger). Reference copy only, not published. |
-| `bitly_qr_manager/`  | Local Python CLI for creating Bitly short links + QR codes for outreach campaigns. Not pushed.       |
 
 ## Git / deployment layout
 
@@ -25,14 +24,12 @@ GitHub repo. Only `website/` is published to the public internet:
   never published — the authoritative copy runs inside Google Apps Script.
   Keeping these files out of `website/` prevents sheet IDs and the
   notification email from being served as public static assets.
-- `bitly_qr_manager/` is gitignored and stays local.
-- `.env` is gitignored.
-- This `README.md` lives alongside the projects as workspace documentation.
+- `.env`, credentials files, and Python caches/venvs are gitignored (see
+  `.gitignore`) so they never reach GitHub.
 
 ## Quick start
 
 - **Website**: see [`website/README.md`](website/README.md).
-- **Bitly QR manager**: see [`bitly_qr_manager/README.md`](bitly_qr_manager/README.md).
 
 ## Adding a new project
 
@@ -40,5 +37,5 @@ GitHub repo. Only `website/` is published to the public internet:
 2. Decide whether it should be pushed or local-only:
    - **Push it** (it's part of what the repo hosts): nothing to do; just commit.
    - **Local only** (tools, experiments, data): add the folder name to
-     `.gitignore` alongside `bitly_qr_manager/`.
+     `.gitignore`.
 3. Each local project gets its own `venv`, `README.md`, and dependencies.

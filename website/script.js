@@ -3,7 +3,7 @@
    - Footer year
    - Message character counter
    - Contact form: POSTs to a Google Apps Script web app
-     (see server/apps-script.gs for the backend + setup guide)
+     (see server/contact-form.gs for the backend + setup guide)
    ========================================================= */
 
 (() => {
@@ -23,7 +23,7 @@
   /* -------------------------------------------------------
      APPS SCRIPT ENDPOINT
      --------------------------------------------------------
-     Follow the setup steps in server/apps-script.gs first.
+     Follow the setup steps in server/contact-form.gs first.
      After you deploy the web app, Google gives you a URL like:
        https://script.google.com/macros/s/AKfycbx.../exec
      Paste that URL as the value of APPS_SCRIPT_URL below.
