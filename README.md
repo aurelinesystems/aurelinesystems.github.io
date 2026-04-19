@@ -7,7 +7,9 @@ no build step, no dependencies.
 
 - `index.html` — all page content and structure
 - `styles.css` — design system and layout
-- `script.js` — footer year, message counter, and Google Forms submit
+- `script.js` — footer year, message counter, and contact-form POST
+- `apps-script.gs` — Apps Script backend code (paste into Google)
+- `.nojekyll` — tells GitHub Pages not to run Jekyll
 
 ## Deploy (GitHub Pages)
 
@@ -28,18 +30,27 @@ that you own. That script writes each submission as a row in a Google
 Sheet and emails you a notification. No credentials are in the website;
 the only value the site knows is a public Apps Script deployment URL.
 
-Full step-by-step setup lives in `apps-script.gs` (the file you paste
-into Google). Short version:
+Full setup notes live in `apps-script.gs`. Current wiring:
 
-1. Create a Google Sheet titled "Aureline Systems — Inquiries".
-   Row 1 headers: `Timestamp | Name | Email | Phone | Company | Message`.
-2. In the sheet: **Extensions → Apps Script**. Paste the contents of
-   `apps-script.gs`. Save.
-3. **Deploy → New deployment → Web app**. Execute as **Me**, access
-   **Anyone**. Copy the web app URL.
-4. Paste that URL into `script.js` as `APPS_SCRIPT_URL`.
-5. Commit and push. Submit the form once on the live site to confirm
-   a row appears and an email arrives.
+- **Sheet ID**: hardcoded in `apps-script.gs` (`SHEET_ID`)
+- **Notification email**: `NOTIFY_EMAIL` in `apps-script.gs`
+- **Web app URL**: `APPS_SCRIPT_URL` in `script.js`
+
+### Editing the backend later
+
+Pushing changes to `apps-script.gs` in this repo does NOT update Google's
+running copy. After editing:
+
+1. Paste the new version into the Apps Script editor at
+   <https://script.google.com> and **Save**.
+2. **Deploy → Manage deployments → pencil → Version: "New version" → Deploy**.
+3. The web app URL stays the same, so `script.js` needs no change.
+
+### Diagnostic
+
+If submissions stop landing, in the Apps Script editor select function
+`runDiagnostic` and click **Run**. It writes a test row and sends a test
+email — revealing any permission or quota issue in the Executions tab.
 
 ### Why this setup
 
@@ -54,7 +65,7 @@ into Google). Short version:
 | What               | Where                                         |
 | ------------------ | --------------------------------------------- |
 | Email destination  | `NOTIFY_EMAIL` in `apps-script.gs` (then redeploy)      |
-| Sheet destination  | Whichever sheet you bind the Apps Script to             |
+| Sheet destination  | `SHEET_ID` in `apps-script.gs` (then redeploy)          |
 | Apps Script URL    | `APPS_SCRIPT_URL` in `script.js`                        |
 | LinkedIn URL       | `index.html` — search for `linkedin.com/company/aureline-systems` (2 places) |
 | Testimonials       | `index.html` — the `<!-- PLACEHOLDER TESTIMONIALS -->` section |

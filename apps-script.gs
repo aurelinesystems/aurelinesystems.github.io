@@ -1,60 +1,52 @@
 /**
  * Aureline Systems — Contact form backend
- * Google Apps Script (bound to a Google Sheet)
+ * Google Apps Script web app (targets a sheet by explicit ID)
  *
- * This script:
+ * What it does:
  *   1. Receives POST requests from the website contact form
- *   2. Appends the submission as a new row in the spreadsheet
+ *   2. Appends each submission as a new row in the target Google Sheet
  *   3. Emails you a notification with the submitter's details
  *
- * No credentials are exposed to the website. The script runs as you,
- * so it has permission to write to your sheet and send from your Gmail.
+ * No credentials live on the website. The script runs as the Google
+ * account that owns it (aurelinesystems@gmail.com), so it has permission
+ * to write to the sheet and send mail.
  *
  * ─────────────────────────────────────────────────────────────
- * SETUP (one-time, ~5 minutes)
+ * SETUP SUMMARY (already done — keep this for reference)
  * ─────────────────────────────────────────────────────────────
- * 1. Create the sheet
- *    - Sign into aurelinesystems@gmail.com
- *    - Go to https://sheets.google.com and create a blank sheet
- *    - Name it: "Aureline Systems — Inquiries"
- *    - In row 1, put headers (tab-separate into cells A1..F1):
- *        Timestamp    Name    Email    Phone    Company    Message
+ *  1. Created a Google Sheet with headers in row 1:
+ *       Timestamp | Name | Email | Phone | Company | Message
+ *     Its ID is hardcoded in SHEET_ID below.
  *
- * 2. Open the script editor
- *    - In the sheet: Extensions → Apps Script
- *    - Delete the default `function myFunction() { ... }`
- *    - Paste THIS ENTIRE FILE in
- *    - Click the disk icon to save (name the project "Aureline Contact")
+ *  2. Created this Apps Script project (standalone OR inside the sheet
+ *     — either works because we use SpreadsheetApp.openById).
  *
- * 3. Deploy as a web app
- *    - Click "Deploy" (top right) → "New deployment"
- *    - Click the gear icon → choose "Web app"
- *    - Description: "Aureline contact endpoint v1"
- *    - Execute as: **Me (aurelinesystems@gmail.com)**
- *    - Who has access: **Anyone**
- *    - Click "Deploy"
- *    - Authorize when prompted. Google will warn because the app is
- *      unverified (it's your own script). Click "Advanced" →
- *      "Go to Aureline Contact (unsafe)" → "Allow". This is safe because
- *      you wrote and own it.
- *    - Copy the "Web app URL". It looks like:
- *        https://script.google.com/macros/s/AKfycbx..../exec
+ *  3. Deployed as a Web App:
+ *       Deploy → New deployment → Type: Web app
+ *       Execute as: Me (aurelinesystems@gmail.com)
+ *       Who has access: Anyone
+ *     Authorized every scope Google asked for (Sheets, Gmail, etc.).
  *
- * 4. Paste the URL into the website
- *    - Open script.js in this repo
- *    - Replace APPS_SCRIPT_URL with the URL you just copied
- *    - Commit and push. GitHub Pages redeploys in ~30s.
- *
- * That's it. Test by submitting the form on the live site — you should
- * see a new row in the sheet and an email in your inbox within seconds.
+ *  4. Pasted the web-app URL into APPS_SCRIPT_URL in script.js.
  *
  * ─────────────────────────────────────────────────────────────
- * CHANGING SETTINGS LATER
+ * AFTER EDITING THIS FILE
  * ─────────────────────────────────────────────────────────────
- * - To change the notification email, edit NOTIFY_EMAIL below and
- *   redeploy: Deploy → Manage deployments → pencil icon → Version:
- *   "New version" → Deploy.
- * - To stop accepting submissions, Deploy → Manage deployments →
+ * Pushing this file to GitHub does NOT update the live Apps Script.
+ * Whenever you change this code:
+ *   1. Paste the new version into the Apps Script editor and Save.
+ *   2. Deploy → Manage deployments → pencil icon → Version: "New version"
+ *      → Deploy.  (The web app URL stays the same, so script.js is fine.)
+ *
+ * ─────────────────────────────────────────────────────────────
+ * TROUBLESHOOTING
+ * ─────────────────────────────────────────────────────────────
+ * - Run `runDiagnostic` from the Apps Script editor at any time to
+ *   verify the script can write to the sheet AND send email.
+ *   Look at the Executions tab (left sidebar) for error details.
+ * - Emails may land in Spam the first time. Mark "Not spam" once
+ *   and Gmail remembers.
+ * - To stop accepting submissions: Deploy → Manage deployments →
  *   trash icon on the active deployment.
  */
 
