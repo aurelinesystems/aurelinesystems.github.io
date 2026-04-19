@@ -37,7 +37,7 @@
   // See website/apps-script-qr.gs for the backend + deployment steps.
   // Leave as the placeholder below until the script is deployed;
   // an empty / placeholder URL silently skips the network send.
-  const QR_SCRIPT_URL = "";
+  const QR_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuzKToUATEeSIexWmal0PKwj91qhc1Uw4a4zWbyXtEBShjuDA_rOP9zYyR4JySJGG9ZQ/exec";
 
   // localStorage key that holds the rolling array of visits.
   const STORAGE_KEY = "aureline:qrVisits";
