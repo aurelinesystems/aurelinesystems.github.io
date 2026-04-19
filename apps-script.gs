@@ -145,6 +145,37 @@ function doGet() {
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
+/**
+ * DIAGNOSTIC — run this once from the Apps Script editor to verify
+ * that email sending works and that the script has the right
+ * authorization scopes. It writes a test row to the sheet and sends
+ * yourself a test email.
+ *
+ * How to run:
+ *   1. Open your Apps Script project.
+ *   2. In the function dropdown at the top, select `runDiagnostic`.
+ *   3. Click Run.
+ *   4. If prompted, click Authorize access and grant every scope
+ *      (Google will ask for Sheets + Gmail). This step is what can
+ *      be missing if email silently fails.
+ *   5. Check your inbox and the sheet.
+ */
+function runDiagnostic() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  const stamp = new Date();
+  sheet.appendRow([stamp, 'Diagnostic', NOTIFY_EMAIL, '', 'Aureline Systems', 'Test from runDiagnostic()']);
+
+  MailApp.sendEmail({
+    to: NOTIFY_EMAIL,
+    subject: SUBJECT_PREFIX + ' diagnostic test',
+    body: 'If you\u2019re reading this, the contact script can write to your sheet and send you email.\n\nSent at ' + stamp.toISOString(),
+    name: 'Aureline Systems Website',
+  });
+
+  const quota = MailApp.getRemainingDailyQuota();
+  console.log('Diagnostic complete. Remaining daily mail quota: ' + quota);
+}
+
 // ───── helpers ─────
 
 function _clean(v, max) {
