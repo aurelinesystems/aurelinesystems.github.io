@@ -31,7 +31,7 @@
      This URL is NOT a secret — it's meant to be called from
      browsers — so it is safe to commit it to this repo.
   -------------------------------------------------------- */
-  const APPS_SCRIPT_URL = 'REPLACE_WITH_APPS_SCRIPT_URL';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUWWjuSktMLLGfBwgUUphBNMbrVadmnjPwYcgSgJ3ZtezY5bwUIjgTI0T9o2t9lKkM/exec';
 
   const form = document.getElementById('contactForm');
   const statusEl = document.getElementById('formStatus');
@@ -78,14 +78,6 @@
     }
     if (!validEmail(email)) {
       setStatus('That email address looks off \u2014 please double-check.', 'is-error');
-      return;
-    }
-
-    if (APPS_SCRIPT_URL === 'REPLACE_WITH_APPS_SCRIPT_URL') {
-      setStatus(
-        'Form not configured yet. See apps-script.gs for setup.',
-        'is-error'
-      );
       return;
     }
 
