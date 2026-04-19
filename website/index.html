@@ -198,7 +198,7 @@
             - We intentionally do NOT display the raw email on the page
               to reduce spam / scraping.
             - Form submissions go through a Google Apps Script web app
-              (see apps-script.gs and script.js).
+              (see server/apps-script.gs and script.js).
             - If you want to expose a mailto link later, add it here.
           -->
           <ul class="contact__list" role="list">
@@ -222,7 +222,7 @@
           live in this HTML; the only value the site knows is a public
           deployment URL (kept in script.js).
 
-          See apps-script.gs in this repo for the one-time setup.
+          See server/apps-script.gs in this repo for the one-time setup.
         -->
         <form class="contact__form" id="contactForm" novalidate>
           <div class="field">

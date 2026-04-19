@@ -8,8 +8,18 @@ no build step, no dependencies.
 - `index.html` — all page content and structure
 - `styles.css` — design system and layout
 - `script.js` — footer year, message counter, and contact-form POST
-- `apps-script.gs` — Apps Script backend code (paste into Google)
+- `campaign-tracker.js` — reads utm_source/utm_campaign and logs QR visits
 - `.nojekyll` — tells GitHub Pages not to run Jekyll
+
+Backend code (NOT deployed to the public site — lives in `../server/`):
+
+- `server/apps-script.gs` — contact-form Apps Script backend
+- `server/apps-script-qr.gs` — QR-visit Apps Script backend
+
+These files are kept out of `website/` on purpose: they contain the sheet
+IDs and the notification email, and there's no reason to serve them
+publicly. They're reference copies — the authoritative version runs inside
+Google Apps Script.
 
 ## Deploy (GitHub Pages)
 
@@ -30,16 +40,16 @@ that you own. That script writes each submission as a row in a Google
 Sheet and emails you a notification. No credentials are in the website;
 the only value the site knows is a public Apps Script deployment URL.
 
-Full setup notes live in `apps-script.gs`. Current wiring:
+Full setup notes live in `../server/apps-script.gs`. Current wiring:
 
-- **Sheet ID**: hardcoded in `apps-script.gs` (`SHEET_ID`)
-- **Notification email**: `NOTIFY_EMAIL` in `apps-script.gs`
-- **Web app URL**: `APPS_SCRIPT_URL` in `script.js`
+- **Sheet ID**: hardcoded in `server/apps-script.gs` (`SHEET_ID`)
+- **Notification email**: `NOTIFY_EMAIL` in `server/apps-script.gs`
+- **Web app URL**: `APPS_SCRIPT_URL` in `script.js` (public by design)
 
 ### Editing the backend later
 
-Pushing changes to `apps-script.gs` in this repo does NOT update Google's
-running copy. After editing:
+Pushing changes to `server/apps-script.gs` in this repo does NOT update
+Google's running copy. After editing:
 
 1. Paste the new version into the Apps Script editor at
    <https://script.google.com> and **Save**.
@@ -64,8 +74,8 @@ email — revealing any permission or quota issue in the Executions tab.
 
 | What               | Where                                         |
 | ------------------ | --------------------------------------------- |
-| Email destination  | `NOTIFY_EMAIL` in `apps-script.gs` (then redeploy)      |
-| Sheet destination  | `SHEET_ID` in `apps-script.gs` (then redeploy)          |
+| Email destination  | `NOTIFY_EMAIL` in `server/apps-script.gs` (then redeploy) |
+| Sheet destination  | `SHEET_ID` in `server/apps-script.gs` (then redeploy)     |
 | Apps Script URL    | `APPS_SCRIPT_URL` in `script.js`                        |
 | LinkedIn URL       | `index.html` — search for `linkedin.com/company/aureline-systems` (2 places) |
 | Testimonials       | `index.html` — the `<!-- PLACEHOLDER TESTIMONIALS -->` section |
