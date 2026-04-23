@@ -1,42 +1,43 @@
-# Aureline Systems — Automations Workspace
+# aurelinesystems.github.io
 
-Local workspace holding the projects that power Aureline Systems' day-to-day
-operations. Each subfolder is a self-contained project; they share nothing
-except this root folder and a single `.env` at the top that projects can
-optionally pick up.
+Source for the Aureline Systems marketing site at
+<https://aurelinesystems.github.io/>.
 
-## Projects
+## What's in this repo
 
-| Folder               | What it is                                                                                            |
-| -------------------- | ----------------------------------------------------------------------------------------------------- |
-| `website/`           | Static single-page marketing site for Aureline Systems. Auto-deploys to GitHub Pages on push.         |
-| `server/`            | Google Apps Script backend code (contact form + QR visit logger). Reference copy only, not published. |
-| `prompts/`           | Reusable AI prompts for common workflows (e.g. spinning up a new GitHub repo). Not published.         |
+| Path                      | Purpose                                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------------------- |
+| `website/`                | The deployed site. Auto-published to GitHub Pages on push via `.github/workflows/deploy.yml`.|
+| `.github/workflows/`      | GitHub Actions — currently just the Pages deploy.                                            |
 
-## Git / deployment layout
+Everything else (Apps Script backends that power the contact form
+and QR visit logger, reusable AI prompts, shared workspace assets)
+lives in private sibling repos under the same GitHub org, not here.
 
-This folder is the root of the `aurelinesystems/aurelinesystems.github.io`
-GitHub repo. Only `website/` is published to the public internet:
+## Deployment
 
-- `website/` is deployed to <https://aurelinesystems.github.io/> via the
-  GitHub Actions workflow at `.github/workflows/deploy.yml`. Nothing
-  outside `website/` is uploaded to GitHub Pages.
-- `server/` is tracked in the repo (for version control and review) but
-  never published — the authoritative copy runs inside Google Apps Script.
-  Keeping these files out of `website/` prevents sheet IDs and the
-  notification email from being served as public static assets.
-- `.env`, credentials files, and Python caches/venvs are gitignored (see
-  `.gitignore`) so they never reach GitHub.
+`.github/workflows/deploy.yml` triggers on pushes to `main` that
+touch `website/**` or the workflow itself. It uploads `website/` as
+the Pages artifact and deploys it. Nothing outside `website/` is
+ever served by Pages.
 
-## Quick start
+## Local development
 
-- **Website**: see [`website/README.md`](website/README.md).
+```powershell
+cd website
+# Open index.html in a browser, or run any static file server.
+```
 
-## Adding a new project
+No build step — hand-written HTML/CSS/JS.
 
-1. Create a sibling folder at the workspace root (e.g. `new_tool/`).
-2. Decide whether it should be pushed or local-only:
-   - **Push it** (it's part of what the repo hosts): nothing to do; just commit.
-   - **Local only** (tools, experiments, data): add the folder name to
-     `.gitignore`.
-3. Each local project gets its own `venv`, `README.md`, and dependencies.
+## Sibling local folders (not in this repo)
+
+The following live as sibling folders on the author's machine but
+are separate GitHub repos:
+
+| Folder / repo                                    | Visibility | Purpose                                                             |
+| ------------------------------------------------ | ---------- | ------------------------------------------------------------------- |
+| `aurelinesystems/aureline-automations`           | Private    | Apps Script backends (contact form, QR visits), prompts, workspace. |
+| `aurelinesystems/aureline-ledger`                | Private    | Master ledger importers + Gmail scrapers + monthly sync workflow.   |
+| `linkedin-autopost/` / `aurelinesystems/linkedin-autopost` | Private | Daily LinkedIn company-page autopost.                               |
+| `aurelinesystems/cruise-monitor`                 | Private    | Cruise deal monitor.                                                |
