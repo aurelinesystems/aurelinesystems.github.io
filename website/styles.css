@@ -126,10 +126,10 @@ textarea:focus-visible {
   color: var(--mute);
   font-weight: 500;
 }
-.section { padding: 120px 0; border-top: 1px solid var(--line-soft); }
+.section { padding: 88px 0; border-top: 1px solid var(--line-soft); }
 .section--muted { background: var(--bg-muted); }
-.section--contact { padding-bottom: 140px; }
-.section__head { max-width: 760px; margin-bottom: 72px; }
+.section--contact { padding-bottom: 100px; }
+.section__head { max-width: 760px; margin-bottom: 56px; }
 .section__title {
   font-family: var(--serif);
   font-weight: 400;
@@ -149,7 +149,7 @@ textarea:focus-visible {
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
-  padding: clamp(90px, 14vw, 180px) 0 clamp(80px, 12vw, 140px);
+  padding: clamp(72px, 11vw, 140px) 0 clamp(60px, 9vw, 100px);
 }
 .hero .eyebrow { margin-bottom: 28px; }
 .hero__title {
@@ -170,7 +170,7 @@ textarea:focus-visible {
 }
 .hero__ctas { display: flex; gap: 12px; flex-wrap: wrap; }
 .hero__divider {
-  margin-top: clamp(60px, 10vw, 120px);
+  margin-top: clamp(40px, 7vw, 80px);
   height: 1px;
   background: var(--line-soft);
 }
@@ -459,8 +459,8 @@ textarea:focus-visible {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
-  .section { padding: 80px 0; }
-  .section__head { margin-bottom: 44px; }
+  .section { padding: 64px 0; }
+  .section__head { margin-bottom: 36px; }
 
   .nav__links { gap: 18px; font-size: 13px; }
   .nav__links a[href="#work"],
