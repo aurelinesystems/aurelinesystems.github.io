@@ -169,6 +169,34 @@ textarea:focus-visible {
   line-height: 1.5;
 }
 .hero__ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--mute);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: color .25s var(--ease);
+}
+.hero__scroll:hover { color: var(--ink); }
+.hero__scroll svg {
+  animation: hero-scroll-bounce 2.4s ease-in-out infinite;
+}
+@keyframes hero-scroll-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+
+@media (max-width: 860px) {
+  .hero__scroll { bottom: 10px; font-size: 10px; gap: 6px; }
+}
 
 /* ---------- Buttons ---------- */
 .btn {
