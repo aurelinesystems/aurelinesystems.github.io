@@ -305,6 +305,54 @@ textarea:focus-visible {
 }
 .review__name { color: var(--ink-soft); font-weight: 500; }
 
+/* ---------- Review expandable detail ---------- */
+.review__details {
+  margin-top: 4px;
+}
+.review__details summary {
+  font-size: 13px;
+  color: var(--mute);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+  transition: color .25s var(--ease);
+}
+.review__details summary::-webkit-details-marker { display: none; }
+.review__details summary:hover { color: var(--ink); }
+.review__details summary::after {
+  content: "→";
+  display: inline-block;
+  font-size: 12px;
+  transition: transform .25s var(--ease);
+}
+.review__details[open] summary::after {
+  transform: rotate(90deg);
+}
+.review__detail-body {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+  display: grid;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.review__detail-body p { margin: 0; }
+.review__detail-body strong {
+  display: block;
+  font-weight: 500;
+  color: var(--mute);
+  letter-spacing: 0.12em;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
 /* ---------- Contact ---------- */
 .contact {
   display: grid;
